@@ -1,6 +1,7 @@
 <?php
 include_once 'lib/Export.php';
 include_once 'lib/base/CallBackInter.php';
+include_once 'lib/tool/MsgQueue.php';
 $config = require_once 'config/config.php';
 
 $worker = new EasyExport($config);

@@ -16,7 +16,8 @@ class test implements CallBackInter {
     public static function onStart()
     {
         // TODO: Implement onStart() method.
-
+        $queue = MsgQueue::createQueue();
+        var_dump($queue);
     }
 
     /**
