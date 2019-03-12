@@ -4,7 +4,7 @@
  * CreateTime: 2019/3/11 下午5:11
  * Description: 共享变量,同一时刻只能有一个进程访问此类,尽量不要使用此类处理大数据，只用来赋值即可。
  */
-class ShareVariable {
+class ShareVar {
 
     /**
      * User: yuzhao
@@ -29,11 +29,11 @@ class ShareVariable {
     /**
      * User: yuzhao
      * CreateTime: 2019/3/11 下午6:40
-     * @return ShareVariable
+     * @return ShareVar
      * Description: 返回当前对象
      */
     public static function instance() {
-        return new ShareVariable();
+        return new ShareVar();
     }
 
     /**
