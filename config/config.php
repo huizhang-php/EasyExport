@@ -7,8 +7,8 @@
 
 return array(
     // 进程数
-    'worker_num' => 9,
+    'worker_num' => 10,
     // 业务处理路径
-    'business_path' => 'app/test.php',
+    'business_path' => 'app/test.php@test',
 );
 

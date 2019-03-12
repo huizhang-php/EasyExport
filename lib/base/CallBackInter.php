@@ -7,6 +7,15 @@
 
 interface CallBackInter
 {
+
+    /**
+     * User: yuzhao
+     * CreateTime: 2019/2/25 下午4:12
+     * @return mixed
+     * Description: 开始回调
+     */
+    public function onStart();
+
     /**
      * User: yuzhao
      * CreateTime: 2019/2/25 下午3:26
@@ -14,7 +23,7 @@ interface CallBackInter
      * @return mixed
      * Description: 每个fock之前的回调
      */
-    public static function onForkBefore($data);
+    public function onForkBefore($data);
 
     /**
      * User: yuzhao
@@ -23,7 +32,7 @@ interface CallBackInter
      * @return mixed
      * Description: 子进程处理回调
      */
-    public static function onChildProcess($data);
+    public function onChildProcess($data);
 
     /**
      * User: yuzhao
@@ -31,14 +40,6 @@ interface CallBackInter
      * @return mixed
      * Description: 结束回调
      */
-    public static function onEnd();
-
-    /**
-     * User: yuzhao
-     * CreateTime: 2019/2/25 下午4:12
-     * @return mixed
-     * Description: 开始回调
-     */
-    public static function onStart();
+    public function onEnd();
 
 }

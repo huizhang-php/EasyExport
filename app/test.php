@@ -5,7 +5,7 @@
  * Description:
  */
 
-class test implements CallBackInter {
+class test implements CallBackInter{
 
     /**
      * User: yuzhao
@@ -13,11 +13,10 @@ class test implements CallBackInter {
      * @return mixed
      * Description: 开始回调
      */
-    public static function onStart()
+    public function onStart()
     {
         // TODO: Implement onStart() method.
-        $queue = MsgQueue::createQueue();
-        var_dump($queue);
+
     }
 
     /**
@@ -27,10 +26,9 @@ class test implements CallBackInter {
      * @return mixed
      * Description: 每个fock之前的回调
      */
-    public static function onForkBefore($data)
+    public function onForkBefore($data)
     {
-        // TODO: Implement onForkBefore() method.
-
+        return $data['first_n'];
     }
 
     /**
@@ -40,10 +38,10 @@ class test implements CallBackInter {
      * @return mixed
      * Description: 子进程处理回调
      */
-    public static function onChildProcess($data)
+    public function onChildProcess($data)
     {
         // TODO: Implement onChildProcess() method.
-
+        sleep($data);
     }
 
     /**
@@ -52,9 +50,9 @@ class test implements CallBackInter {
      * @return mixed
      * Description: 结束回调
      */
-    public static function onEnd()
+    public function onEnd()
     {
-        // TODO: Implement onEnd() method.
+        // TODO: Implement onEnd() method.1
 
     }
 }

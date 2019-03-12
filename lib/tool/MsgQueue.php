@@ -3,6 +3,7 @@
  * User: yuzhao
  * CreateTime: 2019/2/26 下午5:18
  * Description: 多进程通讯-消息队列
+ * 重新封装一遍是为了使用简单些，并且统一类名称管理代码阅读更直观
  */
 
 class MsgQueue {
@@ -16,10 +17,9 @@ class MsgQueue {
     public static function createQueue() {
         // 使用ftok创建一个key名称
         $key = ftok( __DIR__, 'a' );
-        if (msg_queue_exists($key)) {
-            exit('此消息队列已经存在,请消费删除后重试');
-        }
         // 创建消息队列
+        $queue = msg_get_queue( $key, 0666 );
+        msg_remove_queue($queue);
         $queue = msg_get_queue( $key, 0666 );
         return $queue;
     }

@@ -2,26 +2,13 @@
 include_once 'lib/Export.php';
 include_once 'lib/base/CallBackInter.php';
 include_once 'lib/tool/MsgQueue.php';
+require_once 'lib/tool/Log.php';
+require_once 'lib/tool/File.php';
+require_once 'lib/tool/ShareVariable.php';
 $config = require_once 'config/config.php';
-
-$worker = new EasyExport($config);
-
-require_once $config['business_path'];
-
-$worker->onForkBefore = function ($params) {
-    return test::onForkBefore($params);
-};
-
-$worker->onChildProcess = function ($params) {
-    test::onChildProcess($params);
-};
-
-$worker->onEnd = function () {
-    test::onEnd();
-};
-
-$worker->onStart = function () {
-    return test::onStart();
-};
-
+$filePath = explode('@', $config['business_path']);
+require_once $filePath[0];
+$worker = new EasyExport();
+$worker->config = $config;
+$worker->businessClass = new $filePath[1];
 $worker->runAll();

@@ -16,38 +16,6 @@ class EasyExport {
 
     /**
      * User: yuzhao
-     * CreateTime: 2019/2/25 下午1:25
-     * @var null
-     * Description: 每个fork之前要执行的回调
-     */
-    public $onForkBefore = null;
-
-    /**
-     * User: yuzhao
-     * CreateTime: 2019/2/25 下午1:29
-     * @var null
-     * Description: 子进程处理方法
-     */
-    public $onChildProcess = null;
-
-    /**
-     * User: yuzhao
-     * CreateTime: 2019/2/25 下午3:10
-     * @var null
-     * Description: 进程结束回调
-     */
-    public $onEnd = null;
-
-    /**
-     * User: yuzhao
-     * CreateTime: 2019/2/25 下午4:09
-     * @var null
-     * Description: 进程开始回调函数
-     */
-    public $onStart = null;
-
-    /**
-     * User: yuzhao
      * CreateTime: 2019/2/26 上午11:40
      * @var array
      * Description: 子进程
@@ -63,6 +31,22 @@ class EasyExport {
     private $saveChildsPid = array();
 
     /**
+     * User: yuzhao
+     * CreateTime: 2019/3/7 下午2:40
+     * @var array
+     * Description: 配置
+     */
+    public $config = array();
+
+    /**
+     * User: yuzhao
+     * CreateTime: 2019/3/7 下午2:43
+     * @var $businessClass
+     * Description: 业务class
+     */
+    public $businessClass;
+
+    /**
      * EasyExport constructor.
      * @param $input
      */
@@ -75,7 +59,7 @@ class EasyExport {
 
         // 进程数量
         if (isset($config['worker_num'])) {
-            if ($config['worker_num'] >= 20 ) {
+            if ($config['worker_num'] >= 100 ) {
                 exit('进程数量最大限制为20');
             }
             $this->workerNum = $config['worker_num'];
@@ -95,11 +79,9 @@ class EasyExport {
         // 安装信号处理器
         $this->installiSignal();
         // fork前置回调
-        $startResult = $this->onStartCallBack();
+        $this->businessClass->onStart();
         // fork子进程
-        $this->forkProcess($startResult);
-        // fork后置回调
-        $this->onEndCallBack();
+        $this->forkProcess();
         // 循环检测信号队列里是否有信号发生
         $this->isSignal();
     }
@@ -152,20 +134,12 @@ class EasyExport {
         {
             exit('Multitasking needs pcntl, the pcntl extension was not found');
         }
+        $this->workerNum = $this->config['worker_num'];
     }
 
     private function parseCommand() {
         global $argv;
         $startFile = $argv[0];
-        if (isset($argv[2])) {
-            switch ($argv[2]) {
-                case '-d': // 守护进程方式启动
-                    $this->daemonStart();
-                    break;
-                default:
-                    exit('无效参数');
-            }
-        }
         if (isset($argv[1])) {
             switch ($argv[1]) {
                 case 'stop': // 停止进程
@@ -177,9 +151,17 @@ class EasyExport {
                     break;
                 case 'start': // 普通方式启动
                     $this->killEasyExport($startFile);
+                    if (isset($argv[2])) {
+                        switch ($argv[2]) {
+                            case '-d': // 守护进程方式启动
+                                $this->daemonStart();
+                                break;
+                            default:
+                                exit('无效参数');
+                        }
+                    }
                     break;
                 case 'status': // 查看运行状态
-
                     break;
                 default:
                     exit("Usage: php yourfile.php {start|stop|status|reload}\n");
@@ -213,19 +195,28 @@ class EasyExport {
     private function installiSignal() {
         // 非常消耗性能，每执行1行PHP代码就回调pcntl_signal函数，为了兼容<php5.3
         declare(ticks = 1);
-        pcntl_signal( SIGCHLD, function(){
-            $childsPidNum = count( $this->childsPid );
-            if( $childsPidNum > 0 ){
-                foreach( $this->childsPid as $pidKey => $pid ){
-                    $waitResult = pcntl_waitpid( $pid, $status, WNOHANG );
-                    if( $waitResult == $pid || -1 == $waitResult ){
-                        $this->saveChildsPid[$pid]['etime'] = date('Y-m-d H:i:s', time());
-                        unset( $this->childsPid[$pidKey] );
-                        $this->displayUi();
+        pcntl_signal( SIGCHLD, array($this, 'mySignal'));
+    }
+
+    public function mySignal ($signal){
+        $childsPidNum = count( $this->childsPid );
+        if( $childsPidNum > 0 ){
+            foreach( $this->childsPid as $pidKey => $pid ){
+                $waitResult = pcntl_waitpid( $pid, $status, WNOHANG );
+                if( $waitResult == $pid || -1 == $waitResult ){
+                    $this->saveChildsPid[$pid]['etime'] = date('Y-m-d H:i:s', time());
+                    unset( $this->childsPid[$pidKey] );
+                    $this->displayUi();
+                    $childsPidNum = count( $this->childsPid );
+                    if ($childsPidNum == 0) {
+                        // fork后置回调
+                        $this->businessClass->onEnd();
+                        LogTool::instance()->course('easyexport end!');
+                        die('进程退出');
                     }
                 }
             }
-        });
+        }
     }
 
     /**
@@ -234,8 +225,10 @@ class EasyExport {
      * Description: 检测信号队列里是否有信号发生，如果有，则执行进程绑定的信号处理回调函数。
      */
     private function isSignal() {
+        LogTool::instance()->course('easyexport start!');
         while( true ){
 //            pcntl_signal_dispatch();
+            $this->displayUi();
             sleep(1);
         }
     }
@@ -245,10 +238,10 @@ class EasyExport {
      * CreateTime: 2019/2/26 上午11:56
      * Description: fork后置函数
      */
-    private function onEndCallBack() {
+    private function onEndCallBack($data) {
         if ($this->onEnd)
         {
-            call_user_func($this->onEnd);
+            call_user_func($this->onEnd, $data);
         }
     }
 
@@ -258,21 +251,15 @@ class EasyExport {
      * @param $startResult
      * Description: fork 子进程
      */
-    private function forkProcess($startResult) {
+    private function forkProcess() {
         for( $i = 1; $i <= $this->workerNum; $i++ ){
-            if ($this->onForkBefore)
-            {
-                $startResult['first_n'] = $i;
-                $forckBeforeReturn = call_user_func($this->onForkBefore, $startResult);
-            }
+            $startResult['first_n'] = $i;
+            $forckBeforeReturn = $this->businessClass->onForkBefore($startResult);
             $pid = pcntl_fork();
             if( $pid < 0 ){
                 exit();
             } else if( 0 == $pid ) {
-                if ($this->onChildProcess) {
-                    call_user_func($this->onChildProcess, $forckBeforeReturn);
-                }
-                sleep(rand(0,10));
+                $this->businessClass->onChildProcess($forckBeforeReturn);
                 exit();
             } else if( $pid > 0 ) {
                 $this->childsPid[] = $pid;
@@ -282,19 +269,6 @@ class EasyExport {
                 );
             }
         }
-    }
-
-    /**
-     * User: yuzhao
-     * CreateTime: 2019/2/26 上午11:52
-     * Description: fork前置回调
-     */
-    private function onStartCallBack() {
-        if ($this->onStart)
-        {
-            $startResult = call_user_func($this->onStart);
-        }
-        return $startResult;
     }
 
     /**
