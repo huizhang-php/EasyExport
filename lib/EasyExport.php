@@ -206,7 +206,7 @@ class EasyExport {
                 if( $waitResult == $pid || -1 == $waitResult ){
                     $this->saveChildsPid[$pid]['etime'] = date('Y-m-d H:i:s', time());
                     unset( $this->childsPid[$pidKey] );
-                    $this->displayUi();
+//                    $this->displayUi();
                     $childsPidNum = count( $this->childsPid );
                     if ($childsPidNum == 0) {
                         // fork后置回调
@@ -228,7 +228,7 @@ class EasyExport {
         LogTool::instance()->course('easyexport start!');
         while( true ){
 //            pcntl_signal_dispatch();
-            $this->displayUi();
+//            $this->displayUi();
             sleep(1);
         }
     }

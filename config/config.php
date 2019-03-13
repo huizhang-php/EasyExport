@@ -2,7 +2,7 @@
 /**
  * User: yuzhao
  * CreateTime: 2019/2/25 下午2:59
- * Description:
+ * Description: 配置文件
  */
 
 return array(

@@ -10,18 +10,29 @@ class MsgQueue {
 
     /**
      * User: yuzhao
+     * CreateTime: 2019/3/13 下午2:47
+     * @var array
+     * Description: 消息队列们
+     */
+    private static $queues = array();
+
+    /**
+     * User: yuzhao
      * CreateTime: 2019/2/26 下午5:19
      * Description: 创建消息队列
-     * @return resource
+     * @param $queueName 队列名称
+     * @param bool $isRemove 是否清空队列数据
      */
-    public static function createQueue() {
+    public static function createQueue($queueName, $isRemove=true) {
         // 使用ftok创建一个key名称
         $key = ftok( __DIR__, 'a' );
         // 创建消息队列
         $queue = msg_get_queue( $key, 0666 );
-        msg_remove_queue($queue);
-        $queue = msg_get_queue( $key, 0666 );
-        return $queue;
+        if ($isRemove) {
+            msg_remove_queue($queue);
+            $queue = msg_get_queue( $key, 0666);
+        }
+        self::$queues[$queueName] = $queue;
     }
 
     /**
@@ -32,7 +43,8 @@ class MsgQueue {
      * Description: 添加消息
      * @return bool
      */
-    public static function add($queue, $msg) {
+    public static function add($queueName, $msg) {
+        $queue = self::$queues[$queueName];
         if (!msg_send ($queue, 1, $msg, true, true, $msg_err)){
             return false;
         }
@@ -45,7 +57,8 @@ class MsgQueue {
      * @param $queue
      * Description: 获取消息
      */
-    public static function get($queue, $size=1024) {
+    public static function get($queueName, $size=1024) {
+        $queue = self::$queues[$queueName];
         msg_receive( $queue, 0, $msgtype, $size, $message );
         return $message;
     }

@@ -16,7 +16,7 @@ class test implements CallBackInter{
     public function onStart()
     {
         // TODO: Implement onStart() method.
-
+        MsgQueue::createQueue('test');
     }
 
     /**
@@ -41,7 +41,15 @@ class test implements CallBackInter{
     public function onChildProcess($data)
     {
         // TODO: Implement onChildProcess() method.
-        sleep($data);
+        if ($data == 3) {
+            while (true) {
+                var_dump(MsgQueue::get('test'));
+            }
+        } else {
+            for ($i=0;$i<=1000;$i++) {
+                MsgQueue::add('test', $i);
+            }
+        }
     }
 
     /**
