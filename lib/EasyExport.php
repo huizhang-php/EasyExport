@@ -50,8 +50,9 @@ class EasyExport {
      * EasyExport constructor.
      * @param $input
      */
-    public function __construct($config=array())
+    public function __construct()
     {
+        $config= $GLOBALS['CONFIG'];
         // 检查是否为cli启动
         if (substr(php_sapi_name(), 0, 3) !== 'cli') {
             exit("cli mode only");
@@ -59,7 +60,7 @@ class EasyExport {
 
         // 进程数量
         if (isset($config['worker_num'])) {
-            if ($config['worker_num'] >= 100 ) {
+            if ($config['worker_num'] >= 20 ) {
                 exit('进程数量最大限制为20');
             }
             $this->workerNum = $config['worker_num'];

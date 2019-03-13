@@ -1,4 +1,6 @@
 <?php
+$loadFiels = get_included_files();
+define('MYROOT',dirname($loadFiels[0])); // 项目根目录
 require_once 'lib/Autoloader.php';
 $config = require_once 'config/config.php';
 $filePath = explode('@', $config['business_path']);

@@ -2,7 +2,7 @@
 /**
  * User: yuzhao
  * CreateTime: 2019/2/26 下午5:18
- * Description: 多进程通讯-消息队列
+ * Description: 多进程通讯-消息队列(php>5.3)
  * 重新封装一遍是为了使用简单些，并且统一类名称管理代码阅读更直观
  */
 
