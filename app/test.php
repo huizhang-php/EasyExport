@@ -7,6 +7,8 @@
 
 class test implements CallBackInter{
 
+    private static $pipePrefix;
+
     /**
      * User: yuzhao
      * CreateTime: 2019/2/25 下午4:12
@@ -16,7 +18,11 @@ class test implements CallBackInter{
     public function onStart()
     {
         // TODO: Implement onStart() method.
-
+        self::$pipePrefix = md5(__FILE__);
+        $worerNum = $GLOBALS['CONFIG']['worker_num'];
+        for ($i=0;$i<$worerNum;$i++) {
+            PipeTool::iniPipe(self::$pipePrefix);
+        }
     }
 
     /**
@@ -29,6 +35,7 @@ class test implements CallBackInter{
     public function onForkBefore($data)
     {
         // 将数据写入管道
+        return $data;
     }
 
     /**
@@ -41,6 +48,18 @@ class test implements CallBackInter{
     public function onChildProcess($data)
     {
         // TODO: Implement onChildProcess() method.
+        if ($data != 1) {
+            $i = 0;
+            while (true) {
+                PipeTool::wPipe(self::$pipePrefix,++$i."\n");
+                sleep(1);
+            }
+        } else {
+            while (true) {
+                $res = PipeTool::gPipe(self::$pipePrefix);
+                var_dump($res);
+            }
+        }
 
     }
 

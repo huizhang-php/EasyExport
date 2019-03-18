@@ -52,7 +52,7 @@ class EasyExport {
      */
     public function __construct()
     {
-        $config= $GLOBALS['CONFIG'];
+        $config= $GLOBALS['config'];
         // 检查是否为cli启动
         if (substr(php_sapi_name(), 0, 3) !== 'cli') {
             exit("cli mode only");
