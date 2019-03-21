@@ -1,7 +1,7 @@
 <?php
 if(!defined('ROOTDIR'))
 {
-    define('ROOTDIR',realpath(__DIR__.'/../'));   //定义更目录
+    define('ROOTDIR',dirname(dirname(__FILE__)));   //定义更目录
 }
 class Autoloader {
 
