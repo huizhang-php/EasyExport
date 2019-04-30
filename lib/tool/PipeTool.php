@@ -2,7 +2,7 @@
 /**
  * User: yuzhao
  * CreateTime: 2019/3/15 下午5:25
- * Description: 管道
+ * Description: 有名管道
  */
 
 class PipeTool {
@@ -16,36 +16,25 @@ class PipeTool {
     private static $pipes = array();
 
     /**
-     * User: yuzhao
-     * CreateTime: 2019/3/18 下午3:50
+     * 当前对象
+     *
      * @var null
-     * Description:
+     * CreateTime: 2019/4/29 下午6:06
      */
-    private static $rSemId = null;
+    private static $myself = null;
 
     /**
-     * User: yuzhao
-     * CreateTime: 2019/3/18 下午3:53
-     * @var null
-     * Description: 写锁id
+     * 返回当前实例
+     *
+     * @return null|PipeTool
+     * CreateTime: 2019/4/29 下午6:07
      */
-    private static $wSemId = null;
-
-    /**
-     * User: yuzhao
-     * CreateTime: 2019/3/18 下午3:51
-     * @var int
-     * Description: 读锁数量
-     */
-    private static $rSemIdNum=0;
-
-    /**
-     * User: yuzhao
-     * CreateTime: 2019/3/18 下午3:52
-     * @var int
-     * Description: 写锁数量
-     */
-    private static $wSemIdNum=0;
+    public static function instance() {
+        if (is_null(self::$myself)) {
+            self::$myself = new PipeTool();
+        }
+        return self::$myself;
+    }
 
     /**
      * User: yuzhao
@@ -54,125 +43,119 @@ class PipeTool {
      * @return bool
      * Description: 初始化管道
      */
-    public static function iniPipe($name='pepe') {
-        $semKey = ftok( __FILE__, 'b' );
-        self::$rSemIdNum ++;
-        self::$wSemIdNum = (self::$wSemIdNum) * 100;
-        self::$rSemId = sem_get($semKey.self::$rSemIdNum);
-        self::$wSemId = sem_get($semKey.self::$wSemIdNum);
-        $fifoPath = "runtime/cache/pipe/$name";
-        self::$pipes[$name] = array(
-            'pipe_path' => $fifoPath,
-            'r_sem_id' => self::$rSemId,
-            'w_sem_id' => self::$wSemId
-        );
-        if (!file_exists($fifoPath)) {
-            if (!posix_mkfifo($fifoPath, 0666)) {
-                return false;
-            }
+    public function iniPipe($names) {
+        if (is_array($names)) {
+            $names = array_unique($names);
         } else {
-            return false;
+            $names = array($names);
         }
+        $res = $this->createPipe($names);
+        if ($res) {
+            return true;
+        }
+        return false;
     }
 
     /**
-     * User: yuzhao
-     * CreateTime: 2019/3/15 下午6:11
-     * @param $pipeName
-     * @param $data
-     * @return bool
-     * Description: 向管道中写数据
+     * 创建管道
+     *
+     * CreateTime: 2019/4/30 上午11:02
      */
-    public static function wPipe($pipeName, $data) {
-        sem_acquire( self::$pipes[$pipeName]['w_sem_id']);
-        $pipe = fopen(self::$pipes[$pipeName]['pipe_path'], 'w');
-        if ($pipe == NULL) {
-            sem_release(self::$pipes[$pipeName]['w_sem_id']);
-            return false;
+    private function createPipe($names) {
+        foreach ($names as $key => $name) {
+            $pipeName = $this->getPipeName($name);
+            $fifoPath = "runtime/cache/pipe/$pipeName";
+            if (!file_exists($fifoPath)) {
+                if (!posix_mkfifo($fifoPath, 0666)) {
+                    return false;
+                }
+            }
+            if (isset(self::$pipes[$pipeName])) {
+                $this->delPipe($name);
+            }
+            self::$pipes[$pipeName] = array(
+                'pipe_path' => $fifoPath,
+                'pipe' => fopen($fifoPath, 'a+'),
+            );
         }
-        fwrite($pipe, $data);
-        fclose($pipe);
-        sem_release(self::$pipes[$pipeName]['w_sem_id']);
         return true;
     }
 
     /**
      * User: yuzhao
-     * CreateTime: 2019/3/15 下午6:14
-     * @param $pipeName
-     * @param int $size
-     * @return bool|string
-     * Description: 每次固定读取多少长度
+     * CreateTime: 2019/3/15 下午6:11
+     * @param $name
+     * @param $data
+     * @return bool
+     * Description: 向管道中写数据
      */
-    public static function rPipe($pipeName, $size=1024,$isSyn=false) {
-        sem_acquire( self::$pipes[$pipeName]['r_sem_id'] );
-        $pipe = fopen(self::$pipes[$pipeName]['pipe_path'], 'r');
-        if ($isSyn) {
-            stream_set_blocking($pipe, $isSyn);
+    public function wPipe($name, $data) {
+        $pipeName = $this->getPipeName($name);
+        $pipe = self::$pipes[$pipeName]['pipe'];
+        stream_set_blocking($pipe, false);
+        $res = fwrite($pipe, $data);
+        if ($res === false) {
+            sleep(1);
         }
-        if ($pipe == NULL) {
-            sem_release( self::$pipes[$pipeName]['r_sem_id'] );
-            return false;
-        }
-        $data = fread($pipe, $size);
-        fclose($pipe);
-        sem_release( self::$pipes[$pipeName]['r_sem_id'] );
-        return $data;
+        return $res;
     }
 
     /**
      * User: yuzhao
-     * CreateTime: 2019/3/18 下午3:37
-     * @param $pipeName
+     * CreateTime: 2019/3/15 下午6:14
+     * @param $name
      * @param int $size
      * @param bool $isSyn
      * @return bool|string
-     * Description: 每次读取一行\n
+     * Description: 每次固定读取多少长度
      */
-    public static function gPipe($pipeName, $size=1024, $isSyn=false) {
-        sem_acquire( self::$pipes[$pipeName]['r_sem_id'] );
-        $pipe = fopen(self::$pipes[$pipeName]['pipe_path'], 'r');
+    public function rPipe($name, $size=1024,$isSyn=false) {
+        $pipeName = $this->getPipeName($name);
+        $pipe = self::$pipes[$pipeName]['pipe'];
         if ($isSyn) {
-            stream_set_blocking($pipe, $isSyn);
+            stream_set_blocking($pipe, false);
         }
-        if ($pipe == NULL) {
-            sem_release( self::$pipes[$pipeName]['r_sem_id'] );
-            return false;
-        }
-        $data = fgets($pipe, $size);
-        fclose($pipe);
-        sem_release( self::$pipes[$pipeName]['r_sem_id'] );
-        return $data;
+        $data = fread($pipe, $size);
+        return trim($data);
     }
 
     /**
-     * User: yuzhao
-     * CreateTime: 2019/3/15 下午6:14
-     * @param $pipeName
-     * @param int $size
-     * @return string
-     * Description: 读取管道所有数据
+     * 读取一行数据
+     *
+     * @param $name
+     * @param int $size 读取大小
+     * @param bool $isSyn 是否阻塞
+     * @return bool|string
+     * CreateTime: 2019/4/29 下午7:27
      */
-    public static function rAllData($pipeName, $size=1024) {
-        sem_acquire( self::$pipes[$pipeName]['r_sem_id'] );
-        $pipe = fopen(self::$pipes[$pipeName]['pipe_path'], 'r');
-        stream_set_blocking($pipe, false);
-        $data = '';
-        while (!feof($pipe)) {
-            $data .= fread($pipe, $size);
+    public function gPipe($name, $size=1024, $isSyn=false) {
+        $pipeName = $this->getPipeName($name);
+        $pipe = self::$pipes[$pipeName]['pipe'];
+        if ($isSyn) {
+            stream_set_blocking($pipe, false);
         }
-        fclose($pipe);
-        sem_release( self::$pipes[$pipeName]['r_sem_id'] );
+        $data = fgets($pipe, $size);
         return $data;
     }
 
     /**
      * User: yuzhao
      * CreateTime: 2019/3/15 下午6:18
-     * @param $pipeName
-     * Description: 删除管道
+     * @param $name
      */
-    public function delPipe($pipeName) {
+    public function delPipe($name) {
+        $pipeName = $this->getPipeName($name);
         unlink(self::$pipes[$pipeName]);
+    }
+
+    /**
+     * 获取管道名称
+     *
+     * @param $name
+     * @return string
+     */
+    private function getPipeName($name) {
+        $pipeName = md5(__FILE__.$name);
+        return $pipeName;
     }
 }

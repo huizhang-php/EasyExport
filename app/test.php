@@ -18,11 +18,8 @@ class test implements CallBackInter{
     public function onStart()
     {
         // TODO: Implement onStart() method.
-        self::$pipePrefix = md5(__FILE__);
         $worerNum = $GLOBALS['CONFIG']['worker_num'];
-        for ($i=0;$i<$worerNum;$i++) {
-            PipeTool::iniPipe(self::$pipePrefix);
-        }
+        PipeTool::instance()->iniPipe(self::$pipePrefix);
     }
 
     /**
@@ -48,16 +45,33 @@ class test implements CallBackInter{
     public function onChildProcess($data)
     {
         // TODO: Implement onChildProcess() method.
-        if ($data != 1) {
+        if ($data < 9) {
             $i = 0;
             while (true) {
-                PipeTool::wPipe(self::$pipePrefix,++$i."\n");
-                sleep(1);
+                $res = PipeTool::instance()->wPipe(self::$pipePrefix, '
+                    解放路圣诞节疯狂送砥砺奋进速度快乐福建省多亏了附近附近的说服力的卡时间发了多少开发机就发大水来访接待室客服连接单身快乐房价多少,
+                    解放路圣诞节疯狂送砥砺奋进速度快乐福建省多亏了附近附近的说服力的卡时间发了多少开发机就发大水来访接待室客服连接单身快乐房价多少,
+                    解放路圣诞节疯狂送砥砺奋进速度快乐福建省多亏了附近附近的说服力的卡时间发了多少开发机就发大水来访接待室客服连接单身快乐房价多少,
+                    解放路圣诞节疯狂送砥砺奋进速度快乐福建省多亏了附近附近的说服力的卡时间发了多少开发机就发大水来访接待室客服连接单身快乐房价多少,
+                    解放路圣诞节疯狂送砥砺奋进速度快乐福建省多亏了附近附近的说服力的卡时间发了多少开发机就发大水来访接待室客服连接单身快乐房价多少,
+                    解放路圣诞节疯狂送砥砺奋进速度快乐福建省多亏了附近附近的说服力的卡时间发了多少开发机就发大水来访接待室客服连接单身快乐房价多少,
+                    解放路圣诞节疯狂送砥砺奋进速度快乐福建省多亏了附近附近的说服力的卡时间发了多少开发机就发大水来访接待室客服连接单身快乐房价多少,
+                    解放路圣诞节疯狂送砥砺奋进速度快乐福建省多亏了附近附近的说服力的卡时间发了多少开发机就发大水来访接待室客服连接单身快乐房价多少,
+                    解放路圣诞节疯狂送砥砺奋进速度快乐福建省多亏了附近附近的说服力的卡时间发了多少开发机就发大水来访接待室客服连接单身快乐房价多少,
+                    解放路圣诞节疯狂送砥砺奋进速度快乐福建省多亏了附近附近的说服力的卡时间发了多少开发机就发大水来访接待室客服连接单身快乐房价多少,
+                    解放路圣诞节疯狂送砥砺奋进速度快乐福建省多亏了附近附近的说服力的卡时间发了多少开发机就发大水来访接待室客服连接单身快乐房价多少,
+                    解放路圣诞节疯狂送砥砺奋进速度快乐福建省多亏了附近附近的说服力的卡时间发了多少开发机就发大水来访接待室客服连接单身快乐房价多少,
+                    解放路圣诞节疯狂送砥砺奋进速度快乐福建省多亏了附近附近的说服力的卡时间发了多少开发机就发大水来访接待室客服连接单身快乐房价多少,
+                    解放路圣诞节疯狂送砥砺奋进速度快乐福建省多亏了附近附近的说服力的卡时间发了多少开发机就发大水来访接待室客服连接单身快乐房价多少,
+                '."\n");
+                var_dump($res);
+//                sleep(1);
             }
         } else {
             while (true) {
-                $res = PipeTool::gPipe(self::$pipePrefix);
+                $res = PipeTool::instance()->gPipe(self::$pipePrefix,1024);
                 var_dump($res);
+//                sleep(3);
             }
         }
 

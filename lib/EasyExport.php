@@ -255,6 +255,7 @@ class EasyExport {
     private function forkProcess() {
         for( $i = 0; $i < $this->workerNum; $i++ ){
             $forckBeforeReturn = $this->businessClass->onForkBefore($i);
+            $forckBeforeReturn['id'] = $i;
             $pid = pcntl_fork();
             if( $pid < 0 ){
                 exit();
