@@ -6,9 +6,11 @@
  */
 
 return array(
+    // 是否ui显示
+    'is_ui' => true,
     // 进程数
-    'worker_num' => 10,
+    'worker_num' => 1,
     // 业务处理路径
-    'business_path' => 'example/FileTest.php@FileTest',
+    'business_path' => 'example/CallBackTest.php@CallBackTest',
 );
 

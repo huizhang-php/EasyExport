@@ -80,9 +80,9 @@ class EasyExport {
         // 安装信号处理器
         $this->installiSignal();
         // fork前置回调
-        $this->businessClass->onStart();
+        $onStartData = $this->businessClass->onStart();
         // fork子进程
-        $this->forkProcess();
+        $this->forkProcess($onStartData);
         // 循环检测信号队列里是否有信号发生
         $this->isSignal();
     }
@@ -93,36 +93,38 @@ class EasyExport {
      * Description: 展示ui
      */
     private function displayUi() {
-        static $lastLine = 0;
-        $ui = "\n                           EasyExport\n";
-        $ui .= "-----------------------------------------------------------------\n";
-        $ui .= "进程ID[space10]开始时间[space15]结束时间[space11]状态\n";
-        foreach ($this->saveChildsPid as $key => $value) {
-            if (in_array($key, $this->childsPid)) {
-                $ui .= $key."[space5]".$value['stime']."[space5]".$value['etime']."[space5]running\n";
-            } else {
-                $ui .= $key."[space5]".$value['stime']."[space5]".$value['etime']."[space5]stop\n";
+        if (ConfigTool::instance()->getConfig('is_ui')) {
+            static $lastLine = 0;
+            $ui = "\n                           EasyExport\n";
+            $ui .= "-----------------------------------------------------------------\n";
+            $ui .= "进程ID[space10]开始时间[space15]结束时间[space11]状态\n";
+            foreach ($this->saveChildsPid as $key => $value) {
+                if (in_array($key, $this->childsPid)) {
+                    $ui .= $key."[space5]".$value['stime']."[space5]".$value['etime']."[space5]running\n";
+                } else {
+                    $ui .= $key."[space5]".$value['stime']."[space5]".$value['etime']."[space5]stop\n";
+                }
             }
+            $count = 0;
+            for ($i=0;$i<20;$i++) {
+                $ui = str_replace('[space'.$i.']', str_pad('', $i,' '), $ui);
+            }
+            foreach(explode("\n", $ui) as $line)
+            {
+                $count += count(str_split($line, 1024));
+            }
+            for($i = 0; $i < $lastLine-1; $i++)
+            {
+                // 光标移到行首
+                echo "\r";
+                // 清除这一行的内容
+                echo "\033[K";
+                // 上移一行
+                echo "\033[1A";
+            }
+            echo $ui;
+            $lastLine = $count;
         }
-        $count = 0;
-        for ($i=0;$i<20;$i++) {
-            $ui = str_replace('[space'.$i.']', str_pad('', $i,' '), $ui);
-        }
-        foreach(explode("\n", $ui) as $line)
-        {
-            $count += count(str_split($line, 1024));
-        }
-        for($i = 0; $i < $lastLine-1; $i++)
-        {
-            // 光标移到行首
-            echo "\r";
-            // 清除这一行的内容
-            echo "\033[K";
-            // 上移一行
-            echo "\033[1A";
-        }
-        echo $ui;
-        $lastLine = $count;
     }
 
     /**
@@ -207,7 +209,7 @@ class EasyExport {
                 if( $waitResult == $pid || -1 == $waitResult ){
                     $this->saveChildsPid[$pid]['etime'] = date('Y-m-d H:i:s', time());
                     unset( $this->childsPid[$pidKey] );
-//                    $this->displayUi();
+                    $this->displayUi();
                     $childsPidNum = count( $this->childsPid );
                     if ($childsPidNum == 0) {
                         // fork后置回调
@@ -229,7 +231,7 @@ class EasyExport {
         LogTool::instance()->course('easyexport start!');
         while( true ){
 //            pcntl_signal_dispatch();
-//            $this->displayUi();
+            $this->displayUi();
             sleep(1);
         }
     }
@@ -252,8 +254,8 @@ class EasyExport {
      * @param $startResult
      * Description: fork 子进程
      */
-    private function forkProcess() {
-        $forkBefore = array();
+    private function forkProcess($onStartData) {
+        $forkBefore = $onStartData;
         for( $i = 0; $i < $this->workerNum; $i++ ){
             $forkBefore['id'] = $i;
             $forckBeforeReturn = $this->businessClass->onForkBefore($forkBefore);
