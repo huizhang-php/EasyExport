@@ -9,6 +9,6 @@ return array(
     // 进程数
     'worker_num' => 10,
     // 业务处理路径
-    'business_path' => 'example/UsePipe.php@UsePipe',
+    'business_path' => 'example/FileTest.php@FileTest',
 );
 

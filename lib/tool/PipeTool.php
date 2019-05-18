@@ -92,7 +92,6 @@ class PipeTool {
     public function wPipe($name, $data) {
         $pipeName = $this->getPipeName($name);
         $pipe = self::$pipes[$pipeName]['pipe'];
-        stream_set_blocking($pipe, false);
         $res = fwrite($pipe, $data);
         if ($res === false) {
             sleep(1);
@@ -113,7 +112,7 @@ class PipeTool {
         $pipeName = $this->getPipeName($name);
         $pipe = self::$pipes[$pipeName]['pipe'];
         if ($isSyn) {
-            stream_set_blocking($pipe, false);
+            stream_set_blocking($pipe, $isSyn);
         }
         $data = fread($pipe, $size);
         return trim($data);
@@ -131,8 +130,9 @@ class PipeTool {
     public function gPipe($name, $size=1024, $isSyn=false) {
         $pipeName = $this->getPipeName($name);
         $pipe = self::$pipes[$pipeName]['pipe'];
+        stream_set_blocking($pipe, $isSyn);
         if ($isSyn) {
-            stream_set_blocking($pipe, false);
+            stream_set_blocking($pipe, $isSyn);
         }
         $data = fgets($pipe, $size);
         return $data;

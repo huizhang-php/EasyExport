@@ -253,8 +253,10 @@ class EasyExport {
      * Description: fork 子进程
      */
     private function forkProcess() {
+        $forkBefore = array();
         for( $i = 0; $i < $this->workerNum; $i++ ){
-            $forckBeforeReturn = $this->businessClass->onForkBefore($i);
+            $forkBefore['id'] = $i;
+            $forckBeforeReturn = $this->businessClass->onForkBefore($forkBefore);
             $forckBeforeReturn['id'] = $i;
             $pid = pcntl_fork();
             if( $pid < 0 ){
