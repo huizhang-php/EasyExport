@@ -2,15 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9e5d4719-cec6-4981-b360-3cae6bffd8d1" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/php.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/example/FileTest.php" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/lib/base/BaseTool.php" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/lib/tool/ConfigTool.php" />
-      <change beforePath="$PROJECT_DIR$/config/config.php" afterPath="$PROJECT_DIR$/config/config.php" />
-      <change beforePath="$PROJECT_DIR$/lib/EasyExport.php" afterPath="$PROJECT_DIR$/lib/EasyExport.php" />
-      <change beforePath="$PROJECT_DIR$/lib/base/CallBackInter.php" afterPath="$PROJECT_DIR$/lib/base/CallBackInter.php" />
-      <change beforePath="$PROJECT_DIR$/lib/tool/File.php" afterPath="$PROJECT_DIR$/lib/tool/FileTool.php" />
-      <change beforePath="$PROJECT_DIR$/lib/tool/PipeTool.php" afterPath="$PROJECT_DIR$/lib/tool/PipeTool.php" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -43,7 +35,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BaseTool.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="BaseTool.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/base/BaseTool.php">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="336">
@@ -51,6 +43,16 @@
               <folding>
                 <element signature="e#6#177#0#PHP" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="7" lean-forward="false" selection-start-line="0" selection-start-column="7" selection-end-line="0" selection-end-column="7" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -106,6 +108,7 @@
         <option value="$PROJECT_DIR$/lib/tool/FileTool.php" />
         <option value="$PROJECT_DIR$/lib/tool/ConfigTool.php" />
         <option value="$PROJECT_DIR$/lib/base/BaseTool.php" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -258,12 +261,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1558143727797</updated>
-      <workItem from="1558143731455" duration="4942000" />
+      <workItem from="1558143731455" duration="5051000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4942000" />
+    <option name="totallyTimeSpent" value="5051000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1410" height="877" extended-state="0" />
@@ -439,6 +442,14 @@
           <folding>
             <element signature="e#6#177#0#PHP" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="7" lean-forward="false" selection-start-line="0" selection-start-column="7" selection-end-line="0" selection-end-column="7" />
+          <folding />
         </state>
       </provider>
     </entry>
