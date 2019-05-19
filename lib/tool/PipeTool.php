@@ -5,7 +5,7 @@
  * Description: 有名管道
  */
 
-class PipeTool {
+class PipeTool extends BaseTool {
 
     /**
      * User: yuzhao
@@ -16,30 +16,9 @@ class PipeTool {
     private static $pipes = array();
 
     /**
-     * 当前对象
-     *
-     * @var null
-     * CreateTime: 2019/4/29 下午6:06
-     */
-    private static $myself = null;
-
-    /**
-     * 返回当前实例
-     *
-     * @return null|PipeTool
-     * CreateTime: 2019/4/29 下午6:07
-     */
-    public static function instance() {
-        if (is_null(self::$myself)) {
-            self::$myself = new PipeTool();
-        }
-        return self::$myself;
-    }
-
-    /**
      * User: yuzhao
      * CreateTime: 2019/3/15 下午5:47
-     * @param string $name
+     * @param $name
      * @return bool
      * Description: 初始化管道
      */
@@ -92,7 +71,7 @@ class PipeTool {
     public function wPipe($name, $data) {
         $pipeName = $this->getPipeName($name);
         $pipe = self::$pipes[$pipeName]['pipe'];
-        $res = fwrite($pipe, $data);
+        $res = fwrite($pipe, $data."\n");
         if ($res === false) {
             sleep(1);
         }
@@ -130,7 +109,6 @@ class PipeTool {
     public function gPipe($name, $size=1024, $isSyn=false) {
         $pipeName = $this->getPipeName($name);
         $pipe = self::$pipes[$pipeName]['pipe'];
-        stream_set_blocking($pipe, $isSyn);
         if ($isSyn) {
             stream_set_blocking($pipe, $isSyn);
         }

@@ -7,10 +7,10 @@
 
 return array(
     // 是否ui显示
-    'is_ui' => false,
+    'is_ui' => true,
     // 进程数
-    'worker_num' => 12,
+    'worker_num' => 13,
     // 业务处理路径
-    'business_path' => 'app/EasyStudy.php@EasyStudy',
+    'business_path' => 'example/Export2018DataOnlyTest.php@Export2018DataOnlyTest',
 );
 

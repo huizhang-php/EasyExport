@@ -19,7 +19,7 @@ class BaseTool {
     /**
      * 返回当前对象
      *
-     * @return FileTool | ConfigTool
+     * @return FileTool | ConfigTool | PipeTool
      * CreateTime: 2019/5/18 上午10:15
      */
     public static function instance() {
