@@ -30,12 +30,15 @@ class FileTool extends BaseTool
      * 写文件(独占锁方式写入)
      *
      * @param string $fileName 文件名称
-     * @param $data array 写入数据
+     * @param $data
      * CreateTime: 2019/5/18 上午9:48
      * @param string $separator 分隔符
      */
-    public function wFile($fileName='default', $data=array(), $separator="\t")
+    public function wFile($fileName, $data, $separator="\t")
     {
+        if (is_string($data)) {
+            $data = array($data);
+        }
         $file = fopen(self::$filePath . $fileName, 'a+');
         if (flock($file, LOCK_EX)) {
             foreach ($data as $key => $val) {

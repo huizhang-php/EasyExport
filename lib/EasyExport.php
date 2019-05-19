@@ -1,8 +1,9 @@
 <?php
 /**
- * User: yuzhao
- * CreateTime: 2019/2/25 下午12:05
- * Description: 导数据
+ * @CreateTime:   2019/5/18 上午11:11
+ * @Author:       yuzhao  <tuzisir@163.com>
+ * @Copyright:    copyright(2019) yuzhao all rights reserved
+ * @Description:  框架主文件
  */
 class EasyExport {
 
@@ -10,7 +11,7 @@ class EasyExport {
      * User: yuzhao
      * CreateTime: 2019/2/25 下午12:16
      * @var int
-     * Description: 任务数量
+     * Description:
      */
     public $workerNum = 1;
 

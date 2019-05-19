@@ -5,7 +5,7 @@
  * Description:
  */
 
-class LogTool {
+class LogTool extends BaseTool {
 
     /**
      * User: yuzhao
@@ -19,23 +19,6 @@ class LogTool {
         'error_prefix' => 'error_',
         'course_prefix' => 'course_',
     );
-
-    /**
-     * LogTool constructor.
-     */
-    public function __construct()
-    {
-    }
-
-    /**
-     * User: yuzhao
-     * CreateTime: 2019/3/7 下午5:43
-     * @return LogTool
-     * Description: 返回当前实例
-     */
-    public static function instance() {
-        return new LogTool();
-    }
 
     /**
      * User: yuzhao
@@ -72,9 +55,8 @@ class LogTool {
      * Description: 基础日志
      */
     private function baseWLog($data, $type) {
-        $logData  = date('Y-m-d H:i:s', time())."==============================================\n";
+        $logData  = date('Y-m-d H:i:s', time())."-----------------------------------------------------";
         $logData .= var_export($data, true)."\n";
-        $logData  .= "end==============================================================\n";
         $this->config[$type] .= date('Ymd', time()). '.txt';
         $this->config[$type] = fopen($this->config['log_path'].$this->config[$type], 'a+');
         if(flock($this->config[$type], LOCK_EX)) {
